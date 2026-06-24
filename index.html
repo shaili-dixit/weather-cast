@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Flow Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header>
+        <nav class="navbar">
+            <div class="logo-container">
+                <h2>CashFlow</h2>
+            </div>
+            <div class="nav-links">
+                <a href="#dashboard">Dashboard</a>
+                <a href="#expense-section">Expenses</a>
+                <a href="#chart-section">Analytics</a>
+            </div>
+            <div class="theme-toggle" id="themeToggle">🌙</div>
+        </nav>
+    </header>
+
+    <div id="warning-banner"></div>
+
+    <!-- ================= HERO ================= -->
+
+    <section class="hero-section" id="dashboard">
+        <h1>Cash Flow Dashboard</h1>
+        <p>
+            Track your salary and expenses efficiently with real-time updates.
+        </p>
+    </section>
+
+    <!-- ================= SUMMARY CARDS ================= -->
+
+    <section class="summary-section">
+        <div class="summary-card">
+            <h3>Total Salary</h3>
+            <h2 id="salaryDisplay"> ₹0 </h2>
+        </div>
+
+        <div class="summary-card">
+            <h3>Total Expenses</h3>
+            <h2 id="expenseDisplay">₹0</h2>
+        </div>
+
+        <div class="summary-card">
+            <h3>Remaining Balance</h3>
+            <h2 id="balanceDisplay">₹0</h2>
+        </div>
+    </section>
+
+    <!-- ================= INPUT FORM ================= -->
+
+    <section class="expense-section" id="expense-section">
+        <h2>Add Expense</h2>
+        <div class="expense-form">
+            <input type="number" id="salaryInput" placeholder="Enter Salary">
+            <input type="text" id="expenseName" placeholder="Expense Name">
+            <input type="number" id="expenseAmount" placeholder="Expense Amount">
+
+            <button id="addExpenseBtn">Add Expense</button>
+
+            <button id="resetBtn">Reset Dashboard</button>
+        </div>
+    </section>
+
+    <!-- ================= EXPENSE LIST ================= -->
+
+    <section class="expense-list-section">
+        <h2>Expense History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Expense Name</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="expenseTableBody"></tbody>
+        </table>
+    </section>
+
+    <!-- ================= CHART SECTION ================= -->
+
+    <section class="chart-section" id="chart-section">
+        <h2>Expense Analytics</h2>
+        <div class="report-section">
+            <button id="downloadBtn">
+                Download Report
+            </button>
+        </div>
+        <div class="chart-container">
+            <canvas id="expenseChart">
+            </canvas>
+        </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+        <p>
+            © 2026 Cash Flow Dashboard
+        </p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

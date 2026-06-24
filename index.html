@@ -4,116 +4,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cash Flow Dashboard</title>
+    <title>Weather-Cast Dashboard</title>
+
     <link rel="stylesheet" href="style.css">
-
-    <!-- Chart JS -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <body>
 
-    <!-- ================= NAVBAR ================= -->
+    <!-- NAVBAR -->
 
-    <header>
-        <nav class="navbar">
-            <div class="logo-container">
-                <h2>CashFlow</h2>
-            </div>
-            <div class="nav-links">
-                <a href="#dashboard">Dashboard</a>
-                <a href="#expense-section">Expenses</a>
-                <a href="#chart-section">Analytics</a>
-            </div>
-            <div class="theme-toggle" id="themeToggle">🌙</div>
-        </nav>
+    <nav>
+
+        <div class="logo">
+            WeatherCast
+        </div>
+
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#search-section">Search</a></li>
+            <li><a href="#weather-section">Forecast</a></li>
+        </ul>
+
+        <button id="themeToggle">
+            🌙
+        </button>
+
+    </nav>
+
+    <!-- HERO -->
+
+    <header class="hero">
+
+        <h1>Weather-Cast Dashboard</h1>
+
+        <p>
+            Get real-time weather information worldwide.
+        </p>
+
     </header>
 
-    <div id="warning-banner"></div>
+    <!-- SEARCH -->
 
-    <!-- ================= HERO ================= -->
+    <section id="search-section">
 
-    <section class="hero-section" id="dashboard">
-        <h1>Cash Flow Dashboard</h1>
-        <p>
-            Track your salary and expenses efficiently with real-time updates.
-        </p>
-    </section>
+        <div class="search-box">
 
-    <!-- ================= SUMMARY CARDS ================= -->
+            <input
+                type="text"
+                id="cityInput"
+                placeholder="Search city..."
+            >
 
-    <section class="summary-section">
-        <div class="summary-card">
-            <h3>Total Salary</h3>
-            <h2 id="salaryDisplay"> ₹0 </h2>
-        </div>
-
-        <div class="summary-card">
-            <h3>Total Expenses</h3>
-            <h2 id="expenseDisplay">₹0</h2>
-        </div>
-
-        <div class="summary-card">
-            <h3>Remaining Balance</h3>
-            <h2 id="balanceDisplay">₹0</h2>
-        </div>
-    </section>
-
-    <!-- ================= INPUT FORM ================= -->
-
-    <section class="expense-section" id="expense-section">
-        <h2>Add Expense</h2>
-        <div class="expense-form">
-            <input type="number" id="salaryInput" placeholder="Enter Salary">
-            <input type="text" id="expenseName" placeholder="Expense Name">
-            <input type="number" id="expenseAmount" placeholder="Expense Amount">
-
-            <button id="addExpenseBtn">Add Expense</button>
-
-            <button id="resetBtn">Reset Dashboard</button>
-        </div>
-    </section>
-
-    <!-- ================= EXPENSE LIST ================= -->
-
-    <section class="expense-list-section">
-        <h2>Expense History</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Expense Name</th>
-                    <th>Amount</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="expenseTableBody"></tbody>
-        </table>
-    </section>
-
-    <!-- ================= CHART SECTION ================= -->
-
-    <section class="chart-section" id="chart-section">
-        <h2>Expense Analytics</h2>
-        <div class="report-section">
-            <button id="downloadBtn">
-                Download Report
+            <button id="searchBtn">
+                Search
             </button>
+
         </div>
-        <div class="chart-container">
-            <canvas id="expenseChart">
-            </canvas>
-        </div>
+
     </section>
 
-    <!-- ================= FOOTER ================= -->
+    <!-- WEATHER CARD -->
+
+    <section id="weather-section">
+
+        <div class="weather-card">
+
+            <h2 id="cityName">
+                Loading...
+            </h2>
+
+            <div class="temp-display">
+
+                <img
+                    id="weatherIcon"
+                    src=""
+                    alt="Weather Icon"
+                >
+
+                <h1 id="temperature">
+                    --°C
+                </h1>
+
+            </div>
+
+            <p id="condition">
+                --
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- DETAILS -->
+
+    <section class="details-container">
+
+        <div class="detail-card">
+
+            <span class="icon">
+                💧
+            </span>
+
+            <h3>Humidity</h3>
+
+            <p id="humidity">
+                --%
+            </p>
+
+        </div>
+
+        <div class="detail-card">
+
+            <span class="icon">
+                💨
+            </span>
+
+            <h3>Wind Speed</h3>
+
+            <p id="wind">
+                -- km/h
+            </p>
+
+        </div>
+
+        <div class="detail-card">
+
+            <span class="icon">
+                🔽
+            </span>
+
+            <h3>Pressure</h3>
+
+            <p id="pressure">
+                --
+            </p>
+
+        </div>
+
+        <div class="detail-card">
+
+            <span class="icon">
+                🌡️
+            </span>
+
+            <h3>Feels Like</h3>
+
+            <p id="feelsLike">
+                --°C
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
 
     <footer>
+
         <p>
-            © 2026 Cash Flow Dashboard
+            © 2026 Weather-Cast Dashboard
         </p>
+
     </footer>
+
     <script src="script.js"></script>
+
 </body>
+
 </html>

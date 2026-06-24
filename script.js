@@ -1,257 +1,414 @@
-let totalSalary = 0;
-let expenseList = [];
-let expenseChart;
-const salaryInput = document.getElementById("salaryInput");
-const expenseNameInput = document.getElementById("expenseName");
-const expenseAmountInput = document.getElementById("expenseAmount");
+// =====================
+// API KEY
+// =====================
 
-const addExpenseBtn = document.getElementById("addExpenseBtn");
+const API_KEY = "56545a7e7f7772f5f715935e102ce17e";
 
-const salaryDisplay = document.getElementById("salaryDisplay");
-const expenseDisplay = document.getElementById("expenseDisplay");
-const balanceDisplay = document.getElementById("balanceDisplay");
-const downloadBtn = document.getElementById("downloadBtn");
+// =====================
+// DOM ELEMENTS
+// =====================
 
-downloadBtn.addEventListener("click", generatePDF);
+const cityInput = document.getElementById("cityInput");
+const searchBtn = document.getElementById("searchBtn");
 
-const expenseTableBody = document.getElementById("expenseTableBody");
+const cityName = document.getElementById("cityName");
+const temperature = document.getElementById("temperature");
+const condition = document.getElementById("condition");
+const humidity = document.getElementById("humidity");
+const wind = document.getElementById("wind");
+const pressure = document.getElementById("pressure");
+const feelsLike = document.getElementById("feelsLike");
+const weatherIcon = document.getElementById("weatherIcon");
 
-const themeToggle = document.getElementById("themeToggle");
+const themeToggle =
+document.getElementById("themeToggle");
 
-addExpenseBtn.addEventListener(
-    "click",
-    addExpense
-);
+// =====================
+// SEARCH BUTTON
+// =====================
 
-function updateChart() {
-    let totalExpenses = 0;
-    expenseList.forEach((expense) => {
-        totalExpenses += expense.amount;
-    });
-    let remainingBalance = totalSalary - totalExpenses;
-    // Prevent negative values from entering chart
-    if (remainingBalance < 0) {
-        remainingBalance = 0;
-    }
-    const ctx = document.getElementById("expenseChart");
-    if (expenseChart) {
-        expenseChart.destroy();
-    }
-    expenseChart = new Chart(ctx, {
-        type: "pie",
-        data: {
-            labels: ["Expenses", "Remaining Balance"],
-            datasets: [{
-                data: [totalExpenses, remainingBalance],
-                backgroundColor: [
-                    "#ff6384",
-                    "#36a2eb"
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: "bottom"
-                }
-            }
-        }
-    });
-}
+searchBtn.addEventListener("click", () => {
 
-function saveData() {
-    localStorage.setItem(
-        "salary",
-        JSON.stringify(totalSalary)
-    );
+    const city =
+    cityInput.value.trim();
 
-    localStorage.setItem(
-        "expenses",
-        JSON.stringify(expenseList)
-    );
-}
-
-function loadData() {
-    totalSalary =
-        JSON.parse(
-            localStorage.getItem("salary")
-        ) || 0;
-
-    expenseList =
-        JSON.parse(
-            localStorage.getItem("expenses")
-        ) || [];
-
-    renderExpenses();
-    updateSummary();
-    updateChart();
-}
-
-function addExpense() {
-    const salaryValue =
-        Number(salaryInput.value);
-    const expenseName =
-        expenseNameInput.value.trim();
-    const expenseAmount =
-        Number(expenseAmountInput.value);
-    if (
-        salaryValue <= 0 ||
-        expenseName === "" ||
-        expenseAmount <= 0
-    ) {
+    if(city === ""){
 
         alert(
-            "Please enter valid inputs."
+            "Please enter a city name."
         );
+
         return;
     }
-    totalSalary = salaryValue;
 
-    const expense = {
+    getWeather(city);
 
-        name: expenseName,
-        amount: expenseAmount
-    };
+});
 
-    expenseList.push(expense);
-    saveData();
-    renderExpenses();
-    updateSummary();
-    updateChart();
-    clearInputs();
+// =====================
+// ENTER KEY SUPPORT
+// =====================
 
-}
+cityInput.addEventListener(
+    "keypress",
+    (e)=>{
 
-function renderExpenses() {
-    expenseTableBody.innerHTML = "";
-    expenseList.forEach((expense, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${expense.name}</td>
-            <td>₹${expense.amount}</td>
-            <td>
-                <button class="delete-btn"
-                    onclick="deleteExpense(${index})">
-                    🗑
-                </button>
-            </td>
-        `;
-        expenseTableBody.appendChild(row);
-    });
-}
+        if(e.key === "Enter"){
 
-function deleteExpense(index) {
-    expenseList.splice(index, 1);
-    saveData();
-    renderExpenses();
-    updateSummary();
-    updateChart();
-}
+            searchBtn.click();
 
-function updateSummary() {
-    let totalExpenses = 0;
-    expenseList.forEach(
-        (expense) => {
-            totalExpenses += expense.amount;
         }
-    );
-    const remainingBalance =
-        totalSalary - totalExpenses;
-    salaryDisplay.textContent =
-        `₹${totalSalary}`;
-    expenseDisplay.textContent =
-        `₹${totalExpenses}`;
-    balanceDisplay.textContent =
-        `₹${remainingBalance}`;
-    const warningBanner =
-        document.getElementById("warning-banner");
-    if (remainingBalance < 0) {
-        balanceDisplay.style.color = "red";
-        warningBanner.style.display = "block";
-        warningBanner.innerHTML =
-            `⚠ Budget exceeded by ₹${Math.abs(remainingBalance)}`;
-    } else if (
-        remainingBalance <= totalSalary * 0.1
-        &&
-        remainingBalance > 0
-    ) {
-        balanceDisplay.style.color = "orange";
-        warningBanner.style.display = "block";
-        warningBanner.style.background = "#f59e0b";
-        warningBanner.innerHTML =
-            `⚠ Low Balance! Only ₹${remainingBalance} remaining`;
-    } else {
-        balanceDisplay.style.color = "#47ccf0";
-        warningBanner.style.display = "none";
+
     }
-}
+);
 
-function clearInputs() {
-    expenseNameInput.value = "";
-    expenseAmountInput.value = "";
-}
+// =====================
+// WEATHER FETCH
+// =====================
 
-themeToggle.addEventListener("click", toggleTheme);
+async function getWeather(city){
 
-function toggleTheme() {
-    document.body.classList.toggle("dark-theme");
-    if (document.body.classList.contains("dark-theme")) {
-        themeToggle.innerHTML = "☀️";
-    }else {
-        themeToggle.innerHTML = "🌙";
-    }
-    localStorage.setItem(
-        "theme",
-        document.body.classList.contains("dark-theme")
-            ? "dark"
-            : "light"
-    );
-}
+    try{
 
-if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark-theme");
-    themeToggle.innerHTML = "☀️";
-}
+        // CACHE CHECK
 
-function generatePDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    // Calculate totals
-    let totalExpenses = expenseList.reduce(
-        (sum, expense) => sum + expense.amount,
-        0
-    );
-    let remainingBalance = totalSalary - totalExpenses;
-    doc.setFontSize(18);
-    doc.text("Cash Flow Report", 70, 20);
-    doc.setFontSize(12);
-    doc.text(`Salary: ₹${totalSalary}`, 20, 40);
-    doc.text(`Total Expenses: ₹${totalExpenses}`, 20, 50);
-    doc.text(`Remaining Balance: ₹${remainingBalance}`, 20, 60);
-    let y = 80;
-    doc.text("Expense History", 20, y);
-    y += 10;
-    expenseList.forEach((expense) => {
-        doc.text(
-            `${expense.name}: ₹${expense.amount}`,
-            20,
-            y
+        const cache =
+        localStorage.getItem(
+            city.toLowerCase()
         );
-        y += 10;
-    });
-    doc.save("CashFlowReport.pdf");
+
+        if(cache){
+
+            const parsed =
+            JSON.parse(cache);
+
+            const now =
+            Date.now();
+
+            // 10 MINUTES
+
+            if(
+                now - parsed.time
+                < 600000
+            ){
+
+                displayWeather(
+                    parsed.data
+                );
+
+                console.log(
+                    "Loaded from cache"
+                );
+
+                return;
+            }
+        }
+
+        const url =
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+
+        const response =
+        await fetch(url);
+
+        if(!response.ok){
+
+            throw new Error(
+                "City not found"
+            );
+
+        }
+
+        const data =
+        await response.json();
+
+        // SAVE CACHE
+
+        localStorage.setItem(
+
+            city.toLowerCase(),
+
+            JSON.stringify({
+
+                data:data,
+
+                time:Date.now()
+
+            })
+
+        );
+
+        displayWeather(data);
+
+    }
+
+    catch(error){
+
+        cityName.textContent =
+        "City Not Found";
+
+        temperature.textContent =
+        "--°C";
+
+        condition.textContent =
+        "--";
+
+        humidity.textContent =
+        "--";
+
+        wind.textContent =
+        "--";
+
+        pressure.textContent =
+        "--";
+
+        feelsLike.textContent =
+        "--";
+
+        weatherIcon.src = "";
+
+        alert(
+            "City not found. Please try again."
+        );
+
+        console.log(error);
+
+    }
+
 }
 
-loadData();
-document
-    .getElementById("resetBtn")
-    .addEventListener("click", resetDashboard);
-function resetDashboard() {
-    totalSalary = 0;
-    expenseList = [];
-    localStorage.clear();
-    renderExpenses();
-    updateSummary();
-    updateChart();
+// =====================
+// DISPLAY WEATHER
+// =====================
+
+function displayWeather(data){
+
+    cityName.textContent =
+    `${data.name}, ${data.sys.country}`;
+
+    temperature.textContent =
+    `${Math.round(
+        data.main.temp
+    )}°C`;
+
+    condition.textContent =
+    data.weather[0].description;
+
+    humidity.textContent =
+    `${data.main.humidity}%`;
+
+    wind.textContent =
+    `${data.wind.speed} m/s`;
+
+    pressure.textContent =
+    `${data.main.pressure} hPa`;
+
+    feelsLike.textContent =
+    `${Math.round(
+        data.main.feels_like
+    )}°C`;
+
+    const iconCode =
+    data.weather[0].icon;
+
+    weatherIcon.src =
+    `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+
+    updateTheme(
+        data.weather[0].main
+    );
+
 }
+
+// =====================
+// GEOLOCATION
+// =====================
+
+function getLocationWeather(){
+
+    if(!navigator.geolocation){
+
+        getWeather("Kanpur");
+
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        async(position)=>{
+
+            try{
+
+                const lat =
+                position.coords.latitude;
+
+                const lon =
+                position.coords.longitude;
+
+                console.log(
+                    lat,
+                    lon
+                );
+
+                const url =
+                `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+
+                const response =
+                await fetch(url);
+
+                const data =
+                await response.json();
+
+                displayWeather(data);
+
+            }
+
+            catch(error){
+
+                console.log(error);
+
+                getWeather("Kanpur");
+
+            }
+
+        },
+
+        ()=>{
+
+            getWeather("Kanpur");
+
+        }
+
+    );
+
+}
+
+// =====================
+// WEATHER THEMES
+// =====================
+
+function updateTheme(weather){
+
+    document.body.classList.remove(
+
+        "sunny-theme",
+        "cloud-theme",
+        "rain-theme"
+
+    );
+
+    weather =
+    weather.toLowerCase();
+
+    if(
+        weather.includes(
+            "clear"
+        )
+    ){
+
+        document.body.classList.add(
+            "sunny-theme"
+        );
+
+    }
+
+    else if(
+
+        weather.includes(
+            "rain"
+        ) ||
+
+        weather.includes(
+            "drizzle"
+        ) ||
+
+        weather.includes(
+            "thunderstorm"
+        )
+
+    ){
+
+        document.body.classList.add(
+            "rain-theme"
+        );
+
+    }
+
+    else{
+
+        document.body.classList.add(
+            "cloud-theme"
+        );
+
+    }
+
+}
+
+// =====================
+// DARK MODE
+// =====================
+
+themeToggle.addEventListener(
+    "click",
+    ()=>{
+
+        document.body.classList.toggle(
+            "dark-mode"
+        );
+
+        const isDark =
+        document.body.classList.contains(
+            "dark-mode"
+        );
+
+        if(isDark){
+
+            themeToggle.textContent =
+            "☀️";
+
+            localStorage.setItem(
+                "theme",
+                "dark"
+            );
+
+        }
+
+        else{
+
+            themeToggle.textContent =
+            "🌙";
+
+            localStorage.setItem(
+                "theme",
+                "light"
+            );
+
+        }
+
+    }
+);
+
+// =====================
+// LOAD SAVED THEME
+// =====================
+
+const savedTheme =
+localStorage.getItem(
+    "theme"
+);
+
+if(savedTheme === "dark"){
+
+    document.body.classList.add(
+        "dark-mode"
+    );
+
+    themeToggle.textContent =
+    "☀️";
+
+}
+
+// =====================
+// INITIAL LOAD
+// =====================
+
+getLocationWeather();
